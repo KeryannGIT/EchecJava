@@ -4,6 +4,7 @@ import echec.Controleur;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.awt.Color;
@@ -20,7 +21,6 @@ public class PanelPlateau extends JPanel
     public PanelPlateau(Controleur ctrl)
     {
         this.setLayout( new GridLayout(8, 8) );
-
         this.ctrl = ctrl;
 
         this.creerPlateau();
@@ -36,7 +36,11 @@ public class PanelPlateau extends JPanel
             for ( int col=0; col < 8; col++ )
                 this.tabLabel[lig][col].addMouseListener(gereSouris);
        
-        
+        JOptionPane.showMessageDialog(       null, 
+                                            "C'est au joueur " + this.ctrl.getJoueurActuel() + " de commencer !", 
+                                            "Premier joueur", 
+                                            JOptionPane.INFORMATION_MESSAGE
+                                    );
     }
 
     public void creerPlateau()

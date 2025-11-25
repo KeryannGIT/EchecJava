@@ -5,13 +5,22 @@ public class Plateau
     private final int TAILLE = 8;
 
     private char vainqueur;
+    private char joueurActuel;
     
     private Piece[][] plateau;
     
     public Plateau()
     {
         this.plateau = new Piece[this.TAILLE][this.TAILLE];
+        this.initJoueurDepart();
         this.initialiserPlateau();
+    }
+
+    public void initJoueurDepart()
+    {
+        int i = (int)(Math.random() * 2);
+        if ( i== 0 ) this.joueurActuel = 'B';
+        else this.joueurActuel = 'N';
     }
 
     public void initialiserPlateau()
@@ -59,6 +68,8 @@ public class Plateau
 
     public boolean deplacerPiece(int lig, int col, int nouvLig, int nouvCol)
     {
+        if ( this.plateau[lig][col].getCouleur() != this.joueurActuel ) return false;
+
         if (nouvLig < 0 || nouvLig >= this.TAILLE ||
             nouvCol < 0 || nouvCol >= this.TAILLE)
             return false;
@@ -100,6 +111,7 @@ public class Plateau
             this.plateau[lig][col].addDeplacement();
             this.plateau[nouvLig][nouvCol] = pion;
             this.plateau[lig][col] = null;
+            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
             return true;
         }
 
@@ -112,6 +124,7 @@ public class Plateau
             this.plateau[lig][col].addDeplacement();
             this.plateau[nouvLig][nouvCol] = pion;
             this.plateau[lig][col] = null;
+            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
             return true;
         }
 
@@ -124,6 +137,7 @@ public class Plateau
                 this.plateau[lig][col].addDeplacement();
                 this.plateau[nouvLig][nouvCol] = pion;
                 this.plateau[lig][col] = null;
+                this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
                 return true;
             }
         }
@@ -141,6 +155,7 @@ public class Plateau
             this.plateau[lig][col].addDeplacement();
             this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
             this.plateau[lig][col] = null;
+            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
             return true;
         }
 
@@ -168,6 +183,7 @@ public class Plateau
         this.plateau[lig][col].addDeplacement();
         this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
         this.plateau[lig][col] = null;
+        this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
         return true;
     }
 
@@ -182,6 +198,7 @@ public class Plateau
             this.plateau[lig][col].addDeplacement();
             this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
             this.plateau[lig][col] = null;
+            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
             return true;
         }
 
@@ -208,6 +225,7 @@ public class Plateau
         this.plateau[lig][col].addDeplacement();
         this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
         this.plateau[lig][col] = null;
+        this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
         return true;
     }
 
@@ -259,6 +277,11 @@ public class Plateau
         return true;
 
             
+    }
+
+    public char getJoueurActuel()
+    {
+        return this.joueurActuel;
     }
 
 

@@ -46,6 +46,11 @@ public class Controleur
         return this.plateau.getVainqueur();
     }
 
+    public char getJoueurActuel()
+    {
+        return this.plateau.getJoueurActuel();
+    }
+
     public static void main(String[] a)
     {
         new Controleur();
