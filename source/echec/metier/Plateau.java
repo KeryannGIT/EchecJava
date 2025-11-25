@@ -28,6 +28,9 @@ public class Plateau
         ligBlanc=0;
         ligNoir=TAILLE-1;
 
+        
+        /* Placement en dure des pièces sur le plateau */
+
         this.plateau[ligBlanc][col] = new Piece("Tour", 'B');
         this.plateau[ligNoir ][col++] = new Piece("Tour", 'N');
 
@@ -56,108 +59,98 @@ public class Plateau
 
     public boolean deplacerPiece(int lig, int col, int nouvLig, int nouvCol)
     {
-        
-        
-        if ( nouvLig < 0 || nouvLig > this.TAILLE ||
-             nouvCol < 0 || nouvCol > this.TAILLE    ) return false;
-
-        
-        if ( this.plateau[nouvLig][nouvCol] != null && this.plateau[nouvLig][nouvCol].getCouleur() == this.plateau[lig][col].getCouleur() ) return false;
-
-        switch ( this.plateau[lig][col].getNom() )
-        {
-            case "Pion" -> {
-                
-                int posLigP;
-
-                if ( this.plateau[lig][col].getCouleur() == 'B' )
-                {
-                    posLigP = lig+1;
-                }
-
-                else
-                {
-                    posLigP = lig-1;
-                }
-                
-                if ( nouvLig == posLigP && nouvCol == col && this.plateau[nouvLig][nouvCol] == null )
-                {
-                    this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-                    this.plateau[lig][col] = null;
-                }
-
-                else if ( nouvLig == posLigP && 
-                        ( nouvCol == col+1 && this.plateau[posLigP][col+1]!=null && this.plateau[posLigP][col+1].getCouleur() != this.plateau[lig][col].getCouleur() || 
-                        nouvCol == col-1 && this.plateau[posLigP][col-1]!=null && this.plateau[posLigP][col-1].getCouleur() != this.plateau[lig][col].getCouleur()    ) )
-                {
-                    this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-                    this.plateau[lig][col] = null;
-                }
-
-                /*else if ( nouvCol == col && this.plateau[lig+1][col] == null )
-                {
-                    if ( this.plateau[lig][col].getCouleur() == 'B' )
-                    {
-                        int posLig = 
-                    }
-                }*/
-
-            }
-
-
-            case "Tour" -> {
-                this.verifMouvTour( lig, col, nouvLig, nouvCol);
-                
-            }
-
-            case "Cavalier" -> {
-                if ( nouvLig == lig + 1 && ( nouvCol == col-2 || nouvCol == col+2 ) ||
-                     nouvLig == lig - 1 && ( nouvCol == col-2 || nouvCol == col+2 ) ||
-                     nouvLig == lig + 2 && ( nouvCol == col-1 || nouvCol == col+1 ) ||
-                     nouvLig == lig - 2 && ( nouvCol == col-1 || nouvCol == col+1 )    )
-                {
-                    this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-                    this.plateau[lig][col]   = null;
-                }
-            }
-
-            case "Fou" -> {
-                this.verifMouvFou( lig, col, nouvLig, nouvCol);
-            }
-
-            case "Roi" -> {
-                if ( nouvLig == lig && ( nouvCol == col+1 || nouvCol == col-1 ) || 
-                     nouvCol == col && ( nouvLig == lig+1 || nouvLig == lig-1 ) || 
-                     ( nouvLig == lig+1 || nouvCol == col+1 )                  && 
-                     ( nouvLig == lig-1 || nouvCol == col+1 )                      )
-                {
-                    this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-                    this.plateau[lig][col]   = null;
-                }
-            }
-
-            case "Reine" -> {
-                this.verifMouvTour( lig, col, nouvLig, nouvCol);
-                this.verifMouvFou ( lig, col, nouvLig, nouvCol);
-                
-            }
-        }
-
-        if ( this.plateau[lig][col] != null )
+        if (nouvLig < 0 || nouvLig >= this.TAILLE ||
+            nouvCol < 0 || nouvCol >= this.TAILLE)
             return false;
 
+        var piece = this.plateau[lig][col];
+        if (piece == null) return false;
 
+        if (this.plateau[nouvLig][nouvCol] != null &&
+            this.plateau[nouvLig][nouvCol].getCouleur() == piece.getCouleur())
+            return false;
 
-        return true;
-        
+        return switch (piece.getNom()) 
+        {
+            case "Pion"      -> this.deplacerPion(lig, col, nouvLig, nouvCol);
+            case "Tour"      -> this.deplacerTour(lig, col, nouvLig, nouvCol);
+            case "Cavalier"  -> this.deplacerCavalier(lig, col, nouvLig, nouvCol);
+            case "Fou"       -> this.deplacerFou(lig, col, nouvLig, nouvCol);
+            case "Roi"       -> this.deplacerRoi(lig, col, nouvLig, nouvCol);
+            case "Reine"     -> this.deplacerReine(lig, col, nouvLig, nouvCol);
+
+            default -> false;
+        };
     }
 
-    public boolean verifMouvTour(int lig, int col, int nouvLig, int nouvCol)
+    private boolean deplacerPion(int lig, int col, int nouvLig, int nouvCol)
     {
-        if (lig != nouvLig && col != nouvCol) 
+        var pion = this.plateau[lig][col];
+        char couleur = pion.getCouleur();
+
+        
+        int direction = (couleur == 'B') ? 1 : -1; // En fonction de la couleur l'orientation est différente
+        int caseAvant = lig + direction;
+        int caseDeuxAvant = lig + 2 * direction;
+
+        // Avance simple
+        if (nouvLig == caseAvant && nouvCol == col &&
+            this.plateau[caseAvant][col] == null)
         {
-            return false;
+            this.plateau[lig][col].addDeplacement();
+            this.plateau[nouvLig][nouvCol] = pion;
+            this.plateau[lig][col] = null;
+            return true;
         }
+
+        // Avance double
+        if (nouvLig == caseDeuxAvant && nouvCol == col &&
+            this.plateau[caseAvant][col] == null &&
+            this.plateau[caseDeuxAvant][col] == null && 
+            this.plateau[lig][col].getNbDeplacement() < 1 )
+        {
+            this.plateau[lig][col].addDeplacement();
+            this.plateau[nouvLig][nouvCol] = pion;
+            this.plateau[lig][col] = null;
+            return true;
+        }
+
+        // Capture diagonale
+        if (nouvLig == caseAvant && Math.abs(nouvCol - col) == 1)
+        {
+            var cible = this.plateau[nouvLig][nouvCol];
+            if (cible != null && cible.getCouleur() != couleur)
+            {
+                this.plateau[lig][col].addDeplacement();
+                this.plateau[nouvLig][nouvCol] = pion;
+                this.plateau[lig][col] = null;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean deplacerCavalier(int lig, int col, int nouvLig, int nouvCol)
+    {
+        int dLig = Math.abs(nouvLig - lig);
+        int dCol = Math.abs(nouvCol - col);
+
+        if (dLig * dCol == 2) 
+        {
+            this.plateau[lig][col].addDeplacement();
+            this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
+            this.plateau[lig][col] = null;
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private boolean deplacerFou(int lig, int col, int nouvLig, int nouvCol)
+    {
+        if (Math.abs(nouvLig - lig) != Math.abs(nouvCol - col)) return false;
 
         int dLig = Integer.compare(nouvLig, lig);
         int dCol = Integer.compare(nouvCol, col);
@@ -167,37 +160,37 @@ public class Plateau
 
         while (i != nouvLig || j != nouvCol) 
         {
-            if (this.plateau[i][j] != null) 
-            {
-                return false; 
-            }
+            if (this.plateau[i][j] != null) return false;
             i += dLig;
             j += dCol;
         }
 
-
-        if ( this.plateau[nouvLig][nouvCol] != null ) 
-        {
-            if ( this.plateau[nouvLig][nouvCol].getCouleur() == this.plateau[lig][col].getCouleur() )
-            {
-                return false; 
-            }
-        }
-
-        
+        this.plateau[lig][col].addDeplacement();
         this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
         this.plateau[lig][col] = null;
-
         return true;
     }
 
-    public boolean verifMouvFou(int lig, int col, int nouvLig, int nouvCol)
+
+    private boolean deplacerRoi(int lig, int col, int nouvLig, int nouvCol)
     {
-        
-        if (lig == nouvLig || col == nouvCol) 
+        int dLig = Math.abs(nouvLig - lig);
+        int dCol = Math.abs(nouvCol - col);
+
+        if (dLig <= 1 && dCol <= 1) 
         {
-            return false;
+            this.plateau[lig][col].addDeplacement();
+            this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
+            this.plateau[lig][col] = null;
+            return true;
         }
+
+        return false;
+    }
+
+    private boolean deplacerTour(int lig, int col, int nouvLig, int nouvCol)
+    {
+        if (lig != nouvLig && col != nouvCol) return false;
 
         int dLig = Integer.compare(nouvLig, lig);
         int dCol = Integer.compare(nouvCol, col);
@@ -205,31 +198,29 @@ public class Plateau
         int i = lig + dLig;
         int j = col + dCol;
 
-        while ( i != nouvLig && j != nouvCol )
+        while (i != nouvLig || j != nouvCol) 
         {
-            if ( this.plateau[i][j] != null ) { return false; }
-
+            if (this.plateau[i][j] != null) return false;
             i += dLig;
             j += dCol;
-                
-        }
-        
-        
-        
-        if ( this.plateau[nouvLig][nouvCol] != null ) 
-        {
-            if ( this.plateau[nouvLig][nouvCol].getCouleur() == this.plateau[lig][col].getCouleur() )
-            {
-                return false; 
-            }
         }
 
-        
+        this.plateau[lig][col].addDeplacement();
         this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
         this.plateau[lig][col] = null;
-
         return true;
     }
+
+
+
+    private boolean deplacerReine(int lig, int col, int nouvLig, int nouvCol)
+    {
+        return deplacerTour(lig, col, nouvLig, nouvCol)
+            || deplacerFou (lig, col, nouvLig, nouvCol);
+    }
+
+
+    
 
     public void setPiece(int lig, int col, Piece piece)
     {
@@ -269,6 +260,7 @@ public class Plateau
 
             
     }
+
 
     public char getVainqueur()
     {

@@ -2,8 +2,6 @@ package echec.ihm;
 
 import javax.swing.JFrame;
 
-import java.awt.event.*;
-
 import echec.Controleur;
 
 public class FramePlateau extends JFrame

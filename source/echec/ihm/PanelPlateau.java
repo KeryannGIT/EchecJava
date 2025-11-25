@@ -2,8 +2,6 @@ package echec.ihm;
 
 import echec.Controleur;
 
-import echec.metier.Piece;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;

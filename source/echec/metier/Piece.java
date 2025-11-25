@@ -15,7 +15,7 @@ public class Piece
 
     public char   getCouleur() { return this.couleur; }
     public String getNom    () { return this.nom;     }
-    public void setNbDeplacement() { this.nbDeplacement++; }
+    public void addDeplacement() { this.nbDeplacement++; }
     public int getNbDeplacement() { return this.nbDeplacement; }
 
 }

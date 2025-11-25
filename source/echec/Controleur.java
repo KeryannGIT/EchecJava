@@ -4,8 +4,6 @@ import echec.metier.Plateau;
 
 import echec.metier.Piece;
 
-import java.util.ArrayList;
-
 import echec.ihm.FramePlateau;
 
 public class Controleur
