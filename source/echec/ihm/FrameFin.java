@@ -1,4 +1,4 @@
-package code.ihm;
+package echec.ihm;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;

@@ -1,4 +1,4 @@
-package code.metier;
+package echec.metier;
 
 public class Piece 
 {

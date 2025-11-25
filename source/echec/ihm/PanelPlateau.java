@@ -1,8 +1,8 @@
-package code.ihm;
+package echec.ihm;
 
-import code.Controleur;
+import echec.Controleur;
 
-import code.metier.Piece;
+import echec.metier.Piece;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -84,7 +84,8 @@ public class PanelPlateau extends JPanel
             {
                 if ( this.ctrl.getPiece(lig, col) != null )
                 {
-                    icon =  new ImageIcon(getClass().getResource("/code/images/" + this.ctrl.getPiece(lig, col).getNom() + this.ctrl.getPiece(lig, col).getCouleur() + ".png" ) );
+                    String chemin = "../images/" + this.ctrl.getPiece(lig, col).getNom() + this.ctrl.getPiece(lig, col).getCouleur() + ".png" ; 
+                    icon =  new ImageIcon(chemin);
                     image = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
                     this.tabLabel[lig][col].setIcon( new ImageIcon ( image )  );
                     this.tabLabel[lig][col].setHorizontalAlignment(JLabel.CENTER);

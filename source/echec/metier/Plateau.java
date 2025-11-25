@@ -1,6 +1,4 @@
-package code.metier;
-
-//import iut.algo.*;
+package echec.metier;
 
 public class Plateau 
 {
@@ -276,36 +274,4 @@ public class Plateau
     {
         return this.vainqueur;
     }
-
-
-    /*public static void main(String[] a)
-    {
-
-        int lig=-1, col=-1;
-        int nouvLig=-1, nouvCol=-1;
-
-        Plateau p = new Plateau();
-
-        System.out.println(p);
-        
-        while ( true )
-        {
-            System.out.println("Entrez la lig du pion à déplacer : ");
-            lig = Clavier.lire_int();
-
-            System.out.println("Entrez la col du pion à déplacer : ");
-            col = Clavier.lire_int();
-
-            System.out.println("Entrez nouvLig du pion à déplacer : ");
-            nouvLig = Clavier.lire_int();
-
-            System.out.println("Entrez nouvCol du pion à déplacer : ");
-            nouvCol = Clavier.lire_int();
-
-            System.out.println(p.deplacerPiece(lig, col, nouvLig, nouvCol));
-
-            System.out.println(p);
-        }
-        
-    }*/
 }

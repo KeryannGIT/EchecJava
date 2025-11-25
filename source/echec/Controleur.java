@@ -1,12 +1,12 @@
-package code;
+package echec;
 
-import code.metier.Plateau;
+import echec.metier.Plateau;
 
-import code.metier.Piece;
+import echec.metier.Piece;
 
 import java.util.ArrayList;
 
-import code.ihm.FramePlateau;
+import echec.ihm.FramePlateau;
 
 public class Controleur
 {

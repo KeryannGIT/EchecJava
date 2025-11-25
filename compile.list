@@ -1,0 +1,13 @@
+./source/echec/metier/Piece.java
+
+./source/echec/metier/Plateau.java
+
+./source/echec/Controleur.java
+
+./source/echec/ihm/FrameFin.java
+
+./source/echec/ihm/PanelPlateau.java
+
+./source/echec/ihm/FramePlateau.java
+
+-d ./class
