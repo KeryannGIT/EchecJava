@@ -100,6 +100,17 @@ public class Plateau implements Iterable<Piece>
         this.getPiece(lig, col).addDeplacement();
         piece.setX(nouvLig);
         piece.setY(nouvCol);
+
+        if ( piece instanceof Pion )
+        {
+            if ( piece.getCouleur() == 'B' && nouvLig == this.TAILLE-1 || 
+                 piece.getCouleur() == 'N' && nouvLig == 0                )
+            {
+                this.lstPiece.remove(piece);
+                this.lstPiece.add(new Reine(joueurActuel, nouvLig, nouvCol));
+            }
+        }
+
         this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
     }
 
