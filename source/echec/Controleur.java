@@ -1,9 +1,7 @@
 package echec;
 
 import echec.metier.Plateau;
-
 import echec.metier.Piece;
-
 import echec.ihm.FramePlateau;
 
 public class Controleur
@@ -26,9 +24,9 @@ public class Controleur
         return this.plateau.getPiece(lig, col);
     }
 
-    public void setPiece(int lig, int col, Piece piece)
+    public void setPiece( Piece piece )
     {
-        this.plateau.setPiece(lig, col, piece);
+        this.plateau.setPiece( piece);
     }
 
     public boolean deplacerPiece( int lig, int col, int nouvLig, int nouvCol)

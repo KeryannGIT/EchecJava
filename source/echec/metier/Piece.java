@@ -1,21 +1,31 @@
 package echec.metier;
 
-public class Piece 
+public abstract class Piece 
 {
-    private char couleur;
-    private String nom;
-    private int nbDeplacement;
+    protected char couleur;
+    protected int nbMouv;
 
-    public Piece(String nom, char couleur)
+    private int x;
+    private int y;
+
+    public Piece( char couleur, int x, int y )
     {
-        this.nom = nom;
         this.couleur = couleur;
-        this.nbDeplacement = 0;
+        this.nbMouv  = 0;
+        this.x = x;
+        this.y = y;
     }
 
-    public char   getCouleur() { return this.couleur; }
-    public String getNom    () { return this.nom;     }
-    public void addDeplacement() { this.nbDeplacement++; }
-    public int getNbDeplacement() { return this.nbDeplacement; }
+    public abstract boolean mouvementValide( Plateau plateau, int nouvLig, int nouvCol ); 
+
+    public char getCouleur() { return this.couleur; }
+    public int  getNbMouv () { return this.nbMouv ; }
+    public int  getX      () { return this.x;       }
+    public int  getY      () { return this.y;       }
+
+    public void setX( int x ) { this.x = x; }
+    public void setY( int y ) { this.y = y; }
+
+    public void addDeplacement() { this.nbMouv++; }
 
 }

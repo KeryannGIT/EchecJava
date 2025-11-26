@@ -1,5 +1,17 @@
 ./source/echec/metier/Piece.java
 
+./source/echec/metier/Tour.java
+
+./source/echec/metier/Pion.java
+
+./source/echec/metier/Fou.java
+
+./source/echec/metier/Cavalier.java
+
+./source/echec/metier/Roi.java
+
+./source/echec/metier/Reine.java
+
 ./source/echec/metier/Plateau.java
 
 ./source/echec/Controleur.java

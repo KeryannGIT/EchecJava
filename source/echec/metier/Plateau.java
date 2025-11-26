@@ -1,20 +1,28 @@
 package echec.metier;
 
-public class Plateau 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class Plateau implements Iterable<Piece>
 {
     private final int TAILLE = 8;
 
     private char vainqueur;
     private char joueurActuel;
     
-    private Piece[][] plateau;
+    private List<Piece> lstPiece;
     
     public Plateau()
     {
-        this.plateau = new Piece[this.TAILLE][this.TAILLE];
+        this.lstPiece = new ArrayList<Piece>();
         this.initJoueurDepart();
         this.initialiserPlateau();
     }
+
+    /*-------------------------------------------*/
+    /* Classe permettant d'initialiser la partie */
+    /*-------------------------------------------*/
 
     public void initJoueurDepart()
     {
@@ -29,225 +37,82 @@ public class Plateau
         
         for ( int ind=0; ind < this.TAILLE; ind++)
         {
-            this.plateau[1][ind] = new Piece("Pion", 'B');
-            this.plateau[6][ind] = new Piece("Pion", 'N');
+            this.lstPiece.add( new Pion('B', 1, ind) );
+            this.lstPiece.add( new Pion('N', 6, ind) );
         }
 
-        int col=0;
         ligBlanc=0;
         ligNoir=TAILLE-1;
 
-        
-        /* Placement en dure des pièces sur le plateau */
-
-        this.plateau[ligBlanc][col] = new Piece("Tour", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Tour", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Cavalier", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Cavalier", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Fou", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Fou", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Reine", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Reine", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Roi", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Roi", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Fou", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Fou", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Cavalier", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Cavalier", 'N');
-
-        this.plateau[ligBlanc][col] = new Piece("Tour", 'B');
-        this.plateau[ligNoir ][col++] = new Piece("Tour", 'N');
+        this.initPlacement(ligBlanc, 'B');
+        this.initPlacement(ligNoir, 'N');
 
     }
 
+    public void initPlacement( int ligne, char couleur )
+    {
+        /* Placement des pièces sur le plateau */
+
+        this.lstPiece.add( new Tour    ( couleur, ligne, 0 ) );
+        this.lstPiece.add( new Cavalier( couleur, ligne, 1 ) );
+        this.lstPiece.add( new Fou     ( couleur, ligne, 2 ) );
+        this.lstPiece.add( new Reine   ( couleur, ligne, 3 ) );
+        this.lstPiece.add( new Roi     ( couleur, ligne, 4 ) );
+        this.lstPiece.add( new Fou     ( couleur, ligne, 5 ) );
+        this.lstPiece.add( new Cavalier( couleur, ligne, 6 ) );
+        this.lstPiece.add( new Tour    ( couleur, ligne, 7 ) );
+    }
+
+    /*-------------------------------------------------*/
+    /* Méthodes permettant le déroulement de la partie */
+    /*-------------------------------------------------*/
+
     public boolean deplacerPiece(int lig, int col, int nouvLig, int nouvCol)
     {
-        if ( this.plateau[lig][col].getCouleur() != this.joueurActuel ) return false;
+        if ( this.getPiece(lig, col).getCouleur() != this.joueurActuel ) return false;
 
         if (nouvLig < 0 || nouvLig >= this.TAILLE ||
             nouvCol < 0 || nouvCol >= this.TAILLE)
             return false;
 
-        var piece = this.plateau[lig][col];
+        Piece piece = this.getPiece(lig, col);
         if (piece == null) return false;
 
-        if (this.plateau[nouvLig][nouvCol] != null &&
-            this.plateau[nouvLig][nouvCol].getCouleur() == piece.getCouleur())
+        if (this.getPiece(nouvLig, nouvCol) != null &&
+            this.getPiece(nouvLig, nouvCol).getCouleur() == piece.getCouleur())
             return false;
 
-        return switch (piece.getNom()) 
-        {
-            case "Pion"      -> this.deplacerPion(lig, col, nouvLig, nouvCol);
-            case "Tour"      -> this.deplacerTour(lig, col, nouvLig, nouvCol);
-            case "Cavalier"  -> this.deplacerCavalier(lig, col, nouvLig, nouvCol);
-            case "Fou"       -> this.deplacerFou(lig, col, nouvLig, nouvCol);
-            case "Roi"       -> this.deplacerRoi(lig, col, nouvLig, nouvCol);
-            case "Reine"     -> this.deplacerReine(lig, col, nouvLig, nouvCol);
-
-            default -> false;
-        };
-    }
-
-    private boolean deplacerPion(int lig, int col, int nouvLig, int nouvCol)
-    {
-        var pion = this.plateau[lig][col];
-        char couleur = pion.getCouleur();
-
+        if ( ! piece.mouvementValide( this, nouvLig, nouvCol ) )
+            return false;
         
-        int direction = (couleur == 'B') ? 1 : -1; // En fonction de la couleur l'orientation est différente
-        int caseAvant = lig + direction;
-        int caseDeuxAvant = lig + 2 * direction;
-
-        // Avance simple
-        if (nouvLig == caseAvant && nouvCol == col &&
-            this.plateau[caseAvant][col] == null)
+        if ( this.getPiece(nouvLig, nouvCol) != null )
         {
-            this.plateau[lig][col].addDeplacement();
-            this.plateau[nouvLig][nouvCol] = pion;
-            this.plateau[lig][col] = null;
-            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
-            return true;
+            this.lstPiece.remove(this.getPiece(nouvLig, nouvCol));
         }
-
-        // Avance double
-        if (nouvLig == caseDeuxAvant && nouvCol == col &&
-            this.plateau[caseAvant][col] == null &&
-            this.plateau[caseDeuxAvant][col] == null && 
-            this.plateau[lig][col].getNbDeplacement() < 1 )
-        {
-            this.plateau[lig][col].addDeplacement();
-            this.plateau[nouvLig][nouvCol] = pion;
-            this.plateau[lig][col] = null;
-            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
-            return true;
-        }
-
-        // Capture diagonale
-        if (nouvLig == caseAvant && Math.abs(nouvCol - col) == 1)
-        {
-            var cible = this.plateau[nouvLig][nouvCol];
-            if (cible != null && cible.getCouleur() != couleur)
-            {
-                this.plateau[lig][col].addDeplacement();
-                this.plateau[nouvLig][nouvCol] = pion;
-                this.plateau[lig][col] = null;
-                this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean deplacerCavalier(int lig, int col, int nouvLig, int nouvCol)
-    {
-        int dLig = Math.abs(nouvLig - lig);
-        int dCol = Math.abs(nouvCol - col);
-
-        if (dLig * dCol == 2) 
-        {
-            this.plateau[lig][col].addDeplacement();
-            this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-            this.plateau[lig][col] = null;
-            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
-            return true;
-        }
-
-        return false;
-    }
-
-
-    private boolean deplacerFou(int lig, int col, int nouvLig, int nouvCol)
-    {
-        if (Math.abs(nouvLig - lig) != Math.abs(nouvCol - col)) return false;
-
-        int dLig = Integer.compare(nouvLig, lig);
-        int dCol = Integer.compare(nouvCol, col);
-
-        int i = lig + dLig;
-        int j = col + dCol;
-
-        while (i != nouvLig || j != nouvCol) 
-        {
-            if (this.plateau[i][j] != null) return false;
-            i += dLig;
-            j += dCol;
-        }
-
-        this.plateau[lig][col].addDeplacement();
-        this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-        this.plateau[lig][col] = null;
-        this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
+        this.deplacement( lig, col, nouvLig, nouvCol );
         return true;
     }
 
-
-    private boolean deplacerRoi(int lig, int col, int nouvLig, int nouvCol)
+    private void deplacement( int lig, int col, int nouvLig, int nouvCol )
     {
-        int dLig = Math.abs(nouvLig - lig);
-        int dCol = Math.abs(nouvCol - col);
+        Piece piece = this.getPiece(lig, col);
 
-        if (dLig <= 1 && dCol <= 1) 
-        {
-            this.plateau[lig][col].addDeplacement();
-            this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-            this.plateau[lig][col] = null;
-            this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean deplacerTour(int lig, int col, int nouvLig, int nouvCol)
-    {
-        if (lig != nouvLig && col != nouvCol) return false;
-
-        int dLig = Integer.compare(nouvLig, lig);
-        int dCol = Integer.compare(nouvCol, col);
-
-        int i = lig + dLig;
-        int j = col + dCol;
-
-        while (i != nouvLig || j != nouvCol) 
-        {
-            if (this.plateau[i][j] != null) return false;
-            i += dLig;
-            j += dCol;
-        }
-
-        this.plateau[lig][col].addDeplacement();
-        this.plateau[nouvLig][nouvCol] = this.plateau[lig][col];
-        this.plateau[lig][col] = null;
+        this.getPiece(lig, col).addDeplacement();
+        piece.setX(nouvLig);
+        piece.setY(nouvCol);
         this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
-        return true;
     }
 
-
-
-    private boolean deplacerReine(int lig, int col, int nouvLig, int nouvCol)
+    public boolean estVide( int x, int y )
     {
-        return deplacerTour(lig, col, nouvLig, nouvCol)
-            || deplacerFou (lig, col, nouvLig, nouvCol);
-    }
+        boolean bRet = true;
+        for ( Piece piece : this.lstPiece )
+        {
+            if ( piece.getX() == x && piece.getY() == y )
+                bRet = false;
+        }
 
-
-    
-
-    public void setPiece(int lig, int col, Piece piece)
-    {
-        this.plateau[lig][col] = piece;
-    }
-
-    public Piece getPiece(int lig, int col)
-    {
-        return this.plateau[lig][col];
+        return bRet;
     }
 
     public boolean partieFinie()
@@ -259,10 +124,10 @@ public class Plateau
         {
             for ( int col=0; col < 8; col++ )
             {
-                if ( this.plateau[lig][col]!=null && this.plateau[lig][col].getNom().equals("Roi") )
+                if ( this.getPiece(lig, col ) != null && this.getPiece( lig, col ) instanceof Roi )
                 {
                     nbRoi += 1;
-                    roi = this.plateau[lig][col];
+                    roi = this.getPiece(lig, col);
                 }
             }
         }
@@ -279,14 +144,65 @@ public class Plateau
             
     }
 
-    public char getJoueurActuel()
+
+    /*-------------------------*/
+    /* Iterator pour la classe */
+    /*-------------------------*/
+    
+    public Iterator<Piece> iterator()
     {
-        return this.joueurActuel;
+        return new IterPlateau();
+    }
+    
+    /*-----------------------------------*/
+    /*             Setters               */
+    /*-----------------------------------*/
+    public void setPiece( Piece piece )
+    {
+        this.lstPiece.add( piece );
     }
 
+    /*-----------------------------------*/
+    /*             Getters               */
+    /*-----------------------------------*/
+
+    public Piece getPiece(int lig, int col)
+    {
+        for ( Piece p : this.lstPiece )
+        {
+            if ( p.getX() == lig && p.getY() == col ) 
+                return p;
+        }
+
+        return null;
+    }
 
     public char getVainqueur()
     {
         return this.vainqueur;
     }
+
+    public char getJoueurActuel()
+    {
+        return this.joueurActuel;
+    }
+
+    /*----------------------------------------------------------*/
+    /* Classe interne afin de rendre la classe Plateau Iterable */
+    /*----------------------------------------------------------*/
+    private class IterPlateau implements Iterator<Piece>
+    {
+        private int cpt=0;
+
+        public boolean hasNext()
+        {
+            return this.cpt < Plateau.this.lstPiece.size();
+        }
+
+        public Piece next()
+        {
+            return Plateau.this.lstPiece.get( this.cpt++ );
+        }
+    } 
 }
+

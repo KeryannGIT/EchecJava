@@ -86,9 +86,13 @@ public class PanelPlateau extends JPanel
             {
                 if ( this.ctrl.getPiece(lig, col) != null )
                 {
-                    String chemin = "../images/" + this.ctrl.getPiece(lig, col).getNom() + this.ctrl.getPiece(lig, col).getCouleur() + ".png" ; 
+                    String typePiece = "" + this.ctrl.getPiece(lig, col).getClass();
+                    typePiece = typePiece.substring(19);
+
+                    String chemin = "../images/" + typePiece + this.ctrl.getPiece(lig, col).getCouleur() + ".png" ;
                     icon =  new ImageIcon(chemin);
                     image = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                    
                     this.tabLabel[lig][col].setIcon( new ImageIcon ( image )  );
                     this.tabLabel[lig][col].setHorizontalAlignment(JLabel.CENTER);
                     this.tabLabel[lig][col].setVerticalAlignment(JLabel.CENTER);
