@@ -10,8 +10,8 @@ public class Pion extends Piece
     public boolean mouvementValide(Plateau plateau, int nouvLig, int nouvCol)
     {
         int direction = (couleur == 'B') ? 1 : -1;   
-        int ligActuelle = this.getX();
-        int colActuelle = this.getY();
+        int ligActuelle = this.getLig();
+        int colActuelle = this.getCol();
 
         int caseAvant   = ligActuelle + direction;
         int caseDeux    = ligActuelle + 2 * direction;

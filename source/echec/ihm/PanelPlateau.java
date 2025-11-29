@@ -97,6 +97,10 @@ public class PanelPlateau extends JPanel
                     this.tabLabel[lig][col].setHorizontalAlignment(JLabel.CENTER);
                     this.tabLabel[lig][col].setVerticalAlignment(JLabel.CENTER);
                 }
+                else
+                {
+                    this.tabLabel[lig][col].setIcon(null);
+                }
             }
         }
             
@@ -129,7 +133,8 @@ public class PanelPlateau extends JPanel
                         }
                         else
                         {
-                            if ( PanelPlateau.this.ctrl.deplacerPiece(this.ligDepart, this.colDepart, lig, col) )
+                            if ( PanelPlateau.this.ctrl.getPiece(this.ligDepart, this.colDepart).mouvementValide( PanelPlateau.this.ctrl.getPlateau(), lig, col ) &&
+                                 PanelPlateau.this.ctrl.deplacerPiece(this.ligDepart, this.colDepart, lig, col) )
                             {
                                 PanelPlateau.this.tabLabel[ligDepart][colDepart].setIcon(null);
                             }

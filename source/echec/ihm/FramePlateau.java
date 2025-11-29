@@ -27,6 +27,11 @@ public class FramePlateau extends JFrame
         this.setVisible(true);
     }
 
+    public void majIHM()
+    {
+        this.panelPlateau.majIHM();
+    }
+
     public void setLblJoueur()
     {
         this.lblMessageJoueur.setText( "C'est au joueur " + this.ctrl.getJoueurActuel() + " de jouer !" );

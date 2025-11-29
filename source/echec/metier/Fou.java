@@ -9,19 +9,19 @@ public class Fou extends Piece
 
     public boolean mouvementValide( Plateau plateau, int nouvLig, int nouvCol)
     {
-        if (Math.abs(nouvLig - this.getX()) != Math.abs(nouvCol - this.getY())) return false;
+        if (Math.abs(nouvLig - this.getLig()) != Math.abs(nouvCol - this.getCol())) return false;
 
-        int dLig = Integer.compare(nouvLig, this.getX());
-        int dCol = Integer.compare(nouvCol, this.getY());
+        int dLig = Integer.compare(nouvLig, this.getLig());
+        int dCol = Integer.compare(nouvCol, this.getCol());
 
-        int i = this.getX() + dLig;
-        int j = this.getY() + dCol;
+        int i = this.getLig() + dLig;
+        int j = this.getCol() + dCol;
 
         while (i != nouvLig || j != nouvCol) 
         {
             for ( Piece piece : plateau )
             {
-                if ( piece != this && i==piece.getX() && j==piece.getY() )
+                if ( piece != this && i==piece.getLig() && j==piece.getCol() )
                     return false;
             }
             i += dLig;

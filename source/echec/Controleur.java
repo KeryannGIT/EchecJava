@@ -12,7 +12,7 @@ public class Controleur
 
     public Controleur()
     {
-        this.plateau = new Plateau();
+        this.plateau = new Plateau(this);
 
         this.frame = new FramePlateau(this);
 
@@ -47,6 +47,16 @@ public class Controleur
     public char getJoueurActuel()
     {
         return this.plateau.getJoueurActuel();
+    }
+
+    public Plateau getPlateau()
+    {
+        return this.plateau;
+    }
+
+    public void majIHM()
+    {
+        this.frame.majIHM();
     }
 
     public static void main(String[] a)

@@ -1,5 +1,7 @@
 package echec.metier;
 
+import echec.Controleur;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,11 +12,14 @@ public class Plateau implements Iterable<Piece>
 
     private char vainqueur;
     private char joueurActuel;
+
+    private Controleur ctrl;
     
     private List<Piece> lstPiece;
     
-    public Plateau()
+    public Plateau( Controleur ctrl )
     {
+        this.ctrl = ctrl;
         this.lstPiece = new ArrayList<Piece>();
         this.initJoueurDepart();
         this.initialiserPlateau();
@@ -81,14 +86,12 @@ public class Plateau implements Iterable<Piece>
         if (this.getPiece(nouvLig, nouvCol) != null &&
             this.getPiece(nouvLig, nouvCol).getCouleur() == piece.getCouleur())
             return false;
-
-        if ( ! piece.mouvementValide( this, nouvLig, nouvCol ) )
-            return false;
-        
+            
         if ( this.getPiece(nouvLig, nouvCol) != null )
         {
             this.lstPiece.remove(this.getPiece(nouvLig, nouvCol));
         }
+
         this.deplacement( lig, col, nouvLig, nouvCol );
         return true;
     }
@@ -97,9 +100,23 @@ public class Plateau implements Iterable<Piece>
     {
         Piece piece = this.getPiece(lig, col);
 
-        this.getPiece(lig, col).addDeplacement();
-        piece.setX(nouvLig);
-        piece.setY(nouvCol);
+        if ( piece instanceof Roi )
+        {
+            if ( ((Roi)piece).rock( this, nouvCol-col ) )
+            {
+                Piece tour = ((Roi)piece).getTourRock();
+                int dCol = nouvCol-col;
+
+                this.deplacerPiece(tour.getLig(), tour.getCol(), nouvLig, tour.getCol() - dCol );
+                this.getPiece(lig, col).addDeplacement();
+
+                piece.setLig(nouvLig);
+                piece.setCol(nouvCol);
+                
+                this.ctrl.majIHM();
+                return;
+            }
+        }
 
         if ( piece instanceof Pion )
         {
@@ -111,6 +128,11 @@ public class Plateau implements Iterable<Piece>
             }
         }
 
+
+        this.getPiece(lig, col).addDeplacement();
+        piece.setLig(nouvLig);
+        piece.setCol(nouvCol);
+
         this.joueurActuel = (this.joueurActuel == 'N') ? 'B' : 'N';
     }
 
@@ -119,7 +141,7 @@ public class Plateau implements Iterable<Piece>
         boolean bRet = true;
         for ( Piece piece : this.lstPiece )
         {
-            if ( piece.getX() == x && piece.getY() == y )
+            if ( piece.getLig() == x && piece.getCol() == y )
                 bRet = false;
         }
 
@@ -150,9 +172,7 @@ public class Plateau implements Iterable<Piece>
 
         this.vainqueur = roi.getCouleur();
         
-        return true;
-
-            
+        return true;      
     }
 
 
@@ -181,7 +201,7 @@ public class Plateau implements Iterable<Piece>
     {
         for ( Piece p : this.lstPiece )
         {
-            if ( p.getX() == lig && p.getY() == col ) 
+            if ( p.getLig() == lig && p.getCol() == col ) 
                 return p;
         }
 

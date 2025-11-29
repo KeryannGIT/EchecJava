@@ -8,8 +8,8 @@ public class Cavalier extends Piece
 
     public boolean mouvementValide( Plateau plateau, int nouvLig, int nouvCol)
     {
-        int dLig = Math.abs(nouvLig - this.getX());
-        int dCol = Math.abs(nouvCol - this.getY());
+        int dLig = Math.abs(nouvLig - this.getLig());
+        int dCol = Math.abs(nouvCol - this.getCol());
 
         if (dLig * dCol != 2) return false;
         return true;
